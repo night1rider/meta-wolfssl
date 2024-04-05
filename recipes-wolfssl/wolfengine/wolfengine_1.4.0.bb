@@ -8,9 +8,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504"
 DEPENDS += "util-linux-native"
 
 PROVIDES += "wolfengine"
-RPROVIDES_${PN} = "wolfengine"
 
-SRC_URI = "git://github.com/wolfssl/wolfssh.git;nobranch=1;protocol=https;rev=02c18e78d59c1e5a029c171a3879e99a145737ca"
+SRC_URI = "git://github.com/wolfssl/wolfengine.git;nobranch=1;protocol=https;rev=02c18e78d59c1e5a029c171a3879e99a145737ca"
 
 
 S = "${WORKDIR}/git"
