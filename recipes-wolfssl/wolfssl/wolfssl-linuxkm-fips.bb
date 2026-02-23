@@ -88,8 +88,11 @@ EXTRA_OECONF = " \
     --enable-linuxkm \
     --enable-fips=v5.2.4 \
     --with-linux-source=${STAGING_KERNEL_BUILDDIR} \
-    --enable-all-crypto \
     --enable-crypttests \
+    --enable-smallstack \
+    --enable-sp-math-all \
+    --disable-sp \
+    --enable-linuxkm-lkcapi-register=all-kconfig \
 "
 
 python __anonymous() {
