@@ -92,7 +92,6 @@ EXTRA_OECONF = " \
     --enable-smallstack \
     --enable-sp-math-all \
     --disable-sp \
-    --enable-linuxkm-lkcapi-register=all-kconfig \
 "
 
 python __anonymous() {
