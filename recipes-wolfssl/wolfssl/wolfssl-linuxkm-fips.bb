@@ -129,20 +129,11 @@ do_compile() {
         unset LDFLAGS
         unset CPPFLAGS
 
-        # The linuxkm Makefile hardcodes 'cc' for host-native builds (linuxkm-fips-hash
-        # and libwolfssl-user-build). Yocto's build environment doesn't provide 'cc'
-        # on PATH. Create a temporary symlink using BUILD_CC (the host-native compiler).
-        mkdir -p ${B}/host-bin
-        ln -sf $(which ${BUILD_CC}) ${B}/host-bin/cc
-        export PATH="${B}/host-bin:${PATH}"
-
         # Run from top-level source dir so that the autotools-generated Makefile
         # exports KERNEL_ROOT, KERNEL_ARCH, and other configure-derived variables
-        # to the linuxkm/ sub-make.
-        oe_runmake module-with-matching-fips-hash-no-sign
-
-        # Clean up temporary symlink
-        rm -rf ${B}/host-bin
+        # to the linuxkm/ sub-make. Pass HOSTCC so the patched linuxkm Makefile
+        # uses the correct host-native compiler instead of bare 'cc'.
+        oe_runmake module-with-matching-fips-hash-no-sign HOSTCC=$(which ${BUILD_CC})
     else
         oe_runmake
     fi
