@@ -109,11 +109,44 @@ do_configure_fips_hash_check() {
             bbwarn "WOLFSSL_FIPS_HASH_MODE_LINUXKM=manual but FIPS_HASH_LINUXKM is not set"
         fi
     else
-        bbnote "Kernel module auto FIPS mode - hash will be determined by build"
+        bbnote "Kernel module auto FIPS mode - will use 'make module-with-matching-fips-hash-no-sign' to compute and embed the correct hash"
     fi
 }
 
 addtask do_configure_fips_hash_check after do_patch before do_configure
+
+do_compile() {
+    if [ "${WOLFSSL_FIPS_HASH_MODE_LINUXKM}" = "auto" ]; then
+        bbnote "Auto FIPS hash mode: running 'make module-with-matching-fips-hash-no-sign'"
+        bbnote "This will build the .ko, compute the FIPS hash, and patch it in-place."
+
+        # The linuxkm Makefile's libwolfssl-user-build step builds a host-native
+        # userspace wolfSSL library (it unsets CC/LD itself, uses host cc), but
+        # Yocto's cross-compilation LDFLAGS (containing --sysroot=...) and CPPFLAGS
+        # would leak through and break the host build. Unset them here — the kernel
+        # module build itself goes through 'make -C $(KERNEL_ROOT)' which is
+        # self-contained.
+        unset LDFLAGS
+        unset CPPFLAGS
+
+        # The linuxkm Makefile hardcodes 'cc' for host-native builds (linuxkm-fips-hash
+        # and libwolfssl-user-build). Yocto's build environment doesn't provide 'cc'
+        # on PATH. Create a temporary symlink using BUILD_CC (the host-native compiler).
+        mkdir -p ${B}/host-bin
+        ln -sf $(which ${BUILD_CC}) ${B}/host-bin/cc
+        export PATH="${B}/host-bin:${PATH}"
+
+        # Run from top-level source dir so that the autotools-generated Makefile
+        # exports KERNEL_ROOT, KERNEL_ARCH, and other configure-derived variables
+        # to the linuxkm/ sub-make.
+        oe_runmake module-with-matching-fips-hash-no-sign
+
+        # Clean up temporary symlink
+        rm -rf ${B}/host-bin
+    else
+        oe_runmake
+    fi
+}
 
 do_install() {
     install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra
