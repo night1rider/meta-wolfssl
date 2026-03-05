@@ -13,7 +13,7 @@ SECTION = "libs"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSING.rst;md5=e4abd0c56c3f6dc95a7a7eed4c77414b"
 
-SRC_URI = "git://github.com/wolfSSL/wolfcrypt-py.git;nobranch=1;protocol=https;rev=bb89ab707f165402d8ae126e7fd93b49009ce2d7 \
+SRC_URI = "git://github.com/wolfSSL/wolfcrypt-py.git;nobranch=1;protocol=https;rev=03a8a758880f374d88e0095c0848a1d57eb84bef"
            https://github.com/wolfSSL/wolfcrypt-py/pull/72.patch;name=mlkem \
            "
 
